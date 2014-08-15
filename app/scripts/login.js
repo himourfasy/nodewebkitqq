@@ -7,6 +7,8 @@ var gui = require('nw.gui');
 var login = false;
 var stateListHover = false;
 var win = gui.Window.get();
+var tray;
+var winShown=true;
 win.on('maximize',function(){
     win.restore();
 });
@@ -23,9 +25,23 @@ chrome.extension.addListener(function(request, sender) {
 		 $('#loginBox').hide();
 		 $('#qqBox').show();
 		 var win = gui.Window.get();
-		 win.resizeTo(316,540);
+		 win.resizeTo(300, 540);
 		 win.moveTo(window.screen.width-320,100);
 		 buildMainUI();
+
+		 // Create a tray icon
+		tray = new gui.Tray({ title: 'QQ', icon:'app/favicon.ico' });
+		tray.on('click',function(){
+			winShown = !winShown;
+			win.show(winShown);
+			win.moveTo(window.screen.width-320,100);
+		});
+		var menu = new gui.Menu();
+		menu.append(new gui.MenuItem({ type: 'normal', label: '退出' }));
+		menu.items[0].click = function() { 
+      			gui.App.quit();
+		};
+		tray.menu = menu;
 	}
 });
 
